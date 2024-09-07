@@ -1,12 +1,21 @@
 // require('dotenv').config({path: '/.env'}) IT CAN RUN BUT IT IS BASIC
 import dotenv from "dotenv"
 import connectDB from "./db/index.js";
+import { app } from "./app.js";
 
 dotenv.config({  //THIS IS IMPROVED VERSION
     path: './env'
 });
 
-connectDB();
+connectDB()
+.then(() => {
+    app.listen(process.env.PORT || 8000, () => {
+        console.log(`SERVER IS RUNNING AT ${process.env.PORT}`)
+    });
+})
+.catch((err) => {
+    console.log("MONGODB CONNECTION FAILED: ", err)
+})
 
 /*THIS IS BASIC APPROCH
 import express from "express"
