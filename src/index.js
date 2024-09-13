@@ -4,7 +4,7 @@ import connectDB from "./db/index.js";
 import { app } from "./app.js";
 
 dotenv.config({  //THIS IS IMPROVED VERSION
-    path: './env'
+    path: './.env'
 });
 
 connectDB()
@@ -18,7 +18,7 @@ connectDB()
 })
 
 /*THIS IS BASIC APPROCH
-import express from "express"
+import express from "express"   
 const app = express();
 
 ( async() => {                  //this is IF-EASE
