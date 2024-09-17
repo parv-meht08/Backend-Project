@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"; //JWT is bearer token
+import jwt from "jsonwebtoken"; // JWT is bearer token
 
 const userSchema = new Schema(
   {
@@ -29,17 +29,12 @@ const userSchema = new Schema(
     },
 
     avatar: {
-      type: String, //cloudinary url
+      type: String, // Cloudinary URL
       required: true,
     },
 
     coverImage: {
-      type: String, //cloudinary url
-    },
-
-    watchHistory: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Video",
+      type: String, // Cloudinary URL
     },
 
     password: {
@@ -54,19 +49,22 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+// Pre-save hook to hash the password before saving
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next(); //Modify when It call
+  if (!this.isModified("password")) return next(); // Hash password only if modified
 
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
+// Password comparison method
 userSchema.methods.isPasswordCorrect = async function (password) {
-  await bcrypt.compare(password, this.password);
+  return await bcrypt.compare(password, this.password); // Ensure return here
 };
 
-userSchema.method.generateAccessToken = function () {
-  jwt.sign(
+// Method to generate access token
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
     {
       _id: this._id,
       email: this.email,
@@ -80,8 +78,9 @@ userSchema.method.generateAccessToken = function () {
   );
 };
 
-userSchema.method.generateRefreshToken = function () {
-  jwt.sign(
+// Method to generate refresh token
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
     {
       _id: this._id,
       email: this.email,
