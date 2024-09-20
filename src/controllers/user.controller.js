@@ -147,12 +147,17 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(req.user._id, {
-    $set: {
-      refreshToken: undefined,
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $unset: {
+        refreshToken: 1, // this removes the field from document
+      },
     },
-  });
-
+    {
+      new: true,
+    }
+  );
   const options = {
     httpOnly: true,
     secure: true,
@@ -326,11 +331,11 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { userName } = req.params;
-
+  
   if (!userName?.trim()) {
     throw new ApiError(400, "userName is missing");
   }
-
+  
   // const channel = User.find({userName}) you can also do this
   const channel = await User.aggregate([
     {
@@ -340,7 +345,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     },
     {
       $lookup: {
-        from: "subscription", //Here S will be convert to lowercase
+        from: "subscription",
         localField: "_id",
         foreignField: "channel",
         as: "subscribers",
@@ -357,10 +362,10 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     {
       $addFields: {
         subscribersCount: {
-          $size: "$subscribers",
+          $size: { $ifNull: ["$subscribers", []] }, // Ensure subscribers is an array
         },
         channelSubscribedToCount: {
-          $size: "$subscribeTo",
+          $size: { $ifNull: ["$subscribedTo", []] }, // Ensure subscribedTo is an array
         },
         isSubscribed: {
           $cond: {
