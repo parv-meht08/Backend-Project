@@ -37,4 +37,4 @@ This is a backend application designed to provide functionalities similar to You
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/parv-meht08/Backend-Project.git
